@@ -1,0 +1,120 @@
+paths:
+  /users/signup:
+    post:
+      summary: User signup
+      tags:
+        - Users
+      description: Endpoint for user registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: The first name of the user
+                lastName:
+                  type: string
+                  description: The last name of the user
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user
+                password:
+                  type: string
+                  format: password
+                  description: The password for the user (minimum 5 characters, maximum 15 characters, alphanumeric)
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+      responses:
+        "200":
+          description: User created successfully
+        "400":
+          description: Bad request
+        "401":
+          description: User already exists
+
+
+  /users/login:
+    post:
+      summary: User login
+      tags:
+        - Users
+      description: Endpoint for user login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user
+                password:
+                  type: string
+                  format: password
+                  description: The password for the user
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: The authorization token
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal server error
+
+  /users/invite:
+    post:
+      summary: Invite user to board
+      tags:
+        - Users
+      description: Endpoint for users invitation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idBoard:
+                  type: integer
+                  description: The ID of the board
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user
+              required:
+                - idBoard
+                - email
+      responses:
+        "200":
+          description: Invitation successfully sent
+        "400":
+          description: Bad request or already invited user
+        "401":
+          description: Unauthorized

@@ -1,0 +1,48 @@
+{
+  "name": "to-do-app",
+  "version": "1.0.0",
+  "description": "walter-projekat",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./src/tests/*.test.js",
+    "start": "nodemon ./src/app.js",
+    "lint": "eslint src/**"
+  },
+  "author": "emir_davud",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "chai": "^4.3.7",
+    "chai-http": "^4.4.0",
+
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "joi": "^17.9.2",
+    "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb-memory-server": "^8.13.0",
+    "mongoose": "^7.1.1",
+    "nodemailer": "^6.9.3",
+    "nodemon": "^2.0.22",
+    "path": "^0.12.7",
+    "randomstring": "^1.2.3",
+    "sinon": "^15.2.0",
+    "sinon-chai": "^3.7.0",
+    "swagger": "^0.0.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.4.0",
+    "eslint": "^8.40.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2",
+    "mocha": "^10.2.0"
+  }
+}

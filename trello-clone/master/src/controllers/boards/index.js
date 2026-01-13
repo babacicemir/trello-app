@@ -1,0 +1,81 @@
+const boardRepository = require("../../repositories/boards/index")
+const userRepository = require("../../repositories/users/index")
+const randomString = require("randomstring")
+const jwt = require("jsonwebtoken")
+const { createTransporter } = require("../../config/mailservice")
+
+const createBoard = async (req, res) => {
+  try {
+    const { name, users } = req.body
+    const board = {
+      name,
+      users: [],
+    }
+
+    let token = req.header("Authorization")
+    if (!token) {
+      return res.status(401).json({ error: "Missing token" })
+    }
+    token = token.split(" ")[1]
+
+    const decoded = jwt.verify(token, process.env.TOKEN_CODE)
+    const loginUser = await userRepository.getUserById(decoded.userId)
+    board.users.push({
+      email: loginUser.email,
+      role: "admin"
+    })
+
+    const createdBoard = await boardRepository.createBoard(board)
+    const confirmationCode = randomString.generate({ length: 8, charset: "alphanumeric" })
+    const transporter = createTransporter()
+    const invitationLink = `${process.env.API_BASE_URL}/api/boards/${createdBoard.id}/join/${confirmationCode}`
+    const mailData = {
+      from: process.env.EMAIL,
+      subject: "Invitation for board",
+      html: `If you would like to join our board, please click the following link: <a href="${invitationLink}">${invitationLink}</a>`,
+    }
+
+    for (const { email } of users) {
+      const user = await userRepository.getUserByEmail(email)
+      if (user) {
+        const saveInvitation = await userRepository.sendInvite(createdBoard.id, email, confirmationCode)
+        mailData.to = email
+        await transporter.sendMail(mailData)
+        console.log(saveInvitation)
+      } else {
+        console.log(`User with email: "${email}" does not exist!`)
+      }
+    }
+
+    return res.status(201).json({ message: "Board created!", createdBoard })
+  } catch (error) {
+    console.error("Error creating board:", error)
+    res.status(500).json({ error: "Error creating new board!" })
+  }
+}
+
+const readAllBoards = async (req, res) => {
+  try {
+    const allBoards = await boardRepository.getAllBoards()
+    res.status(200).json({ boards: allBoards })
+  } catch (error) {
+    res.status(400).json(error)
+  }
+}
+
+const readBoard = async (req, res) => {
+  try {
+    const boardID = req.params.id
+    const board = await boardRepository.getBoardById(boardID)
+    if (!board) {
+      return res.status(404).json({})
+    } else {
+      return res.status(200).json(board)
+    }
+  } catch (error) {
+    console.error("Error reading board:", error)
+    return res.status(400).json(error)
+  }
+}
+
+module.exports = { createBoard, readAllBoards, readBoard }

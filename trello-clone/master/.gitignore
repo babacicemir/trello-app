@@ -1,0 +1,11 @@
+# JetBrains
+.idea/
+node_modules/
+#files
+.idea/.gitignore
+.idea/codeStyles/codeStyleConfig.xml
+.idea/codeStyles/Project.xml
+.idea/master.iml
+.idea/modules.xml
+.idea/vcs.xml
+
