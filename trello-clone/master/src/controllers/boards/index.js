@@ -2,7 +2,8 @@ const boardRepository = require("../../repositories/boards/index")
 const userRepository = require("../../repositories/users/index")
 const randomString = require("randomstring")
 const jwt = require("jsonwebtoken")
-const { createTransporter } = require("../../config/mailservice")
+const { sendEmail } = require("../../config/mailservice")
+
 
 const createBoard = async (req, res) => {
   try {
@@ -20,34 +21,52 @@ const createBoard = async (req, res) => {
 
     const decoded = jwt.verify(token, process.env.TOKEN_CODE)
     const loginUser = await userRepository.getUserById(decoded.userId)
+
     board.users.push({
       email: loginUser.email,
-      role: "admin"
+      role: "admin",
     })
 
     const createdBoard = await boardRepository.createBoard(board)
-    const confirmationCode = randomString.generate({ length: 8, charset: "alphanumeric" })
-    const transporter = createTransporter()
+
+    const confirmationCode = randomString.generate({
+      length: 8,
+      charset: "alphanumeric",
+    })
+
     const invitationLink = `${process.env.API_BASE_URL}/api/boards/${createdBoard.id}/join/${confirmationCode}`
-    const mailData = {
-      from: process.env.EMAIL,
-      subject: "Invitation for board",
-      html: `If you would like to join our board, please click the following link: <a href="${invitationLink}">${invitationLink}</a>`,
-    }
 
     for (const { email } of users) {
       const user = await userRepository.getUserByEmail(email)
+
       if (user) {
-        const saveInvitation = await userRepository.sendInvite(createdBoard.id, email, confirmationCode)
-        mailData.to = email
-        await transporter.sendMail(mailData)
-        console.log(saveInvitation)
+        await userRepository.sendInvite(
+          createdBoard.id,
+          email,
+          confirmationCode
+        )
+
+        await sendEmail({
+          to: email,
+          subject: "Invitation for board",
+          html: `
+            <h2>You are invited </h2>
+            <p>You have been invited to join the board <b>${createdBoard.name}</b>.</p>
+            <p>
+              Click here to join:
+              <a href="${invitationLink}">${invitationLink}</a>
+            </p>
+          `,
+        })
       } else {
-        console.log(`User with email: "${email}" does not exist!`)
+        console.log(`User with email "${email}" does not exist`)
       }
     }
 
-    return res.status(201).json({ message: "Board created!", createdBoard })
+    return res.status(201).json({
+      message: "Board created!",
+      createdBoard,
+    })
   } catch (error) {
     console.error("Error creating board:", error)
     res.status(500).json({ error: "Error creating new board!" })
