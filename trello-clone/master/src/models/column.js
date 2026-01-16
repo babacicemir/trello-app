@@ -2,6 +2,13 @@ const { boolean } = require("joi")
 const mongoose = require("mongoose")
 
 const columnSchema = new mongoose.Schema({
+    
+    id: {
+        type: "String",
+        required: true,
+        unique: true
+    },
+    
     name: {
         type: "String",
         "required": true,

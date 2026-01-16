@@ -13,5 +13,6 @@ router.get("/:id/join/:code", user.acceptInvite)
 router.get("/:id", checkJWT, board.readBoard)
 
 router.post("/columns", checkJWT, validation.columnValidate, column.createColumn)
+router.put("/columns/:columnId", checkJWT, column.updateColumn)
 
 module.exports = router

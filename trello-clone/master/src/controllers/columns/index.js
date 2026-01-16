@@ -1,4 +1,5 @@
 const columnRepository  = require("../../repositories/columns")
+const boardRepository = require("../../repositories/boards")
 const randomString = require("randomstring");
 
 const createColumn = async(req, res) => {
@@ -24,7 +25,7 @@ const createColumn = async(req, res) => {
 
     }
     catch(error){
-        if(error===11000){
+        if(error.code===11000){
             return res.status(400).json({
                 error: `Column with name "${err.keyValue.name}" already exists in this board.`,
             })
@@ -34,6 +35,42 @@ const createColumn = async(req, res) => {
 
 }
 
+const updateColumn = async(req, res) => {
+    try{
+        const { name, isDefault } = req.body;
+        const { columnId } = req.params;
+        
+        if (!name && typeof isDefault === "undefined"){
+            return res.status(400).json({message: "Nothing to update!"})
+        }
+
+        const updateData = {
+            name,
+            isDefault
+        }
+
+        const updatedColumn = await columnRepository.editColumn(columnId, updateData)
+
+        if(!updatedColumn){
+            return res.status(404).json({
+                error: "Column not found!"
+            })
+        }
+
+        return res.status(200).json({
+            message: "Column is successfully updated!",
+            updatedColumn
+        })
+
+    }
+    catch(error){
+        return res.status(500).json({
+            error: "Error updating column."
+        })
+    }
+}
+
 module.exports = { 
     createColumn,
+    updateColumn
  }
