@@ -97,4 +97,40 @@ const readBoard = async (req, res) => {
   }
 }
 
-module.exports = { createBoard, readAllBoards, readBoard }
+
+const updateBoard = async (req, res) => {
+  try{
+    const { name } = req.body
+    const { boardId } = req.params
+
+    if(!name){
+      return res.status(400).json({
+        message: "Nothing to update!"
+      })
+    }
+
+
+    const updatedBoard = await boardRepository.updateBoard(boardId, name)
+
+    console.log(updateBoard)
+
+    if(!updatedBoard){
+      return res.status(404).json({
+        error: "Board not found!"
+      })
+    }
+
+    return res.status(200).json({
+      message: "Board successfully updated!",
+      updatedBoard
+    })
+  }
+  catch(error){
+    return res.status(500).json({
+      error: "Error updating board"
+    })
+  }
+}
+
+
+module.exports = { createBoard, readAllBoards, readBoard, updateBoard }

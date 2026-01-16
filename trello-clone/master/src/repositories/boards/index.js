@@ -38,4 +38,27 @@ const getBoardById = async (id) => {
   return board
 }
 
-module.exports = { createBoard, getAllBoards, getBoardById, addUserOnBoard }
+
+const updateBoard = async (boardId, newName) => {
+
+  
+  const board = await Board.findOne({ id: boardId })
+
+  if(!board){
+    return null
+  }
+
+  board.name = newName
+  
+  await board.save()
+
+  return board
+}
+
+module.exports = { 
+  createBoard, 
+  getAllBoards, 
+  getBoardById, 
+  addUserOnBoard,
+  updateBoard
+}
