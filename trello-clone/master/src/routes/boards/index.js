@@ -3,6 +3,7 @@ const { checkJWT } = require("../../middlewares/index")
 const user = require("../../controllers/users")
 const board = require("../../controllers/boards")
 const column = require("../../controllers/columns")
+const ticket = require("../../controllers/tickets")
 const validation = require("../../middlewares/validations/index")
 
 const router = Router()
@@ -15,5 +16,7 @@ router.put("/:boardId", checkJWT, board.updateBoard)
 
 router.post("/columns", checkJWT, validation.columnValidate, column.createColumn)
 router.put("/columns/:columnId", checkJWT, column.updateColumn)
+
+router.post("/:boardId/tickets", checkJWT, validation.ticketValidate, ticket.createTicket)
 
 module.exports = router

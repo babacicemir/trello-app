@@ -150,10 +150,60 @@ const columnValidate = (req, res, next) => {
   next()
 }
 
+const ticketSchema = Joi.object({
+  title: Joi.string().min(3).max(200).required().messages({
+    "string.base": "Title must be a string",
+    "string.empty": "Title cannot be empty",
+    "string.min": "Title must have at least {#limit} characters",
+    "string.max": "Title must have at most {#limit} characters",
+    "any.required": "Title is required",
+  }),
+  columnId: Joi.string().optional().messages({
+    "string.base": "Column ID must be a string",
+    "string.empty": "Column ID cannot be empty"
+  }),
+  description: Joi.string().allow("").optional().messages({
+    "string.base": "Description must be a string",
+  }),
+
+  attachments: Joi.array()
+    .items(Joi.string().uri().messages({
+      "string.uri": "Attachment must be a valid URL",
+    }))
+    .optional()
+    .messages({
+      "array.base": "Attachments must be an array",
+    }),
+
+  assignee: Joi.string().email().optional().allow(null).messages({
+    "string.base": "Assignee must be a string",
+    "string.email": "Assignee must be a valid email",
+  }),
+
+  estimate: Joi.number().min(0).optional().allow(null).messages({
+    "number.base": "Estimate must be a number",
+    "number.min": "Estimate cannot be negative",
+  }),
+}) 
+
+const ticketValidate = (req, res, next) => {
+  const { error, value } = ticketSchema.validate(req.body, {
+    abortEarly: false,
+  })
+  if (error) {
+    const errorMessages = error.details.map((detail) => detail.message)
+    return res.status(400).json({ errors: errorMessages })
+  }
+
+  req.body = value
+  next()
+}
+
 module.exports = {
   validateLogin,
   signupValidate,
   inviteValidate,
   boardValidate,
-  columnValidate
+  columnValidate,
+  ticketValidate
 }

@@ -48,9 +48,15 @@ const editColumn = async(columnId, updateData) => {
     return column
 }
 
+const findDefaultColumn = async(boardId) => {
+    const defaultColumn = await Column.findOne({default : true, boardId: boardId})
+    return defaultColumn.id
+}
+
 
 
 module.exports = {
     createNewColumn,
-    editColumn
+    editColumn,
+    findDefaultColumn
 }

@@ -112,7 +112,6 @@ const updateBoard = async (req, res) => {
 
     const updatedBoard = await boardRepository.updateBoard(boardId, name)
 
-    console.log(updateBoard)
 
     if(!updatedBoard){
       return res.status(404).json({
