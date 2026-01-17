@@ -23,7 +23,27 @@ const findTicketById = async(id) => {
     return ticket
 }
 
+const updateTicket = async(id, updateData) => {
+    console.log(id, updateData)
+    const ticket = await Ticket.findOne( { id } )
+    if(!ticket){
+        return null
+    }
+
+    if(updateData.title!==undefined) ticket.title = updateData.title
+    if(updateData.description!==undefined) ticket.description = updateData.description
+    if(updateData.columnId!==undefined) ticket.columnId = updateData.columnId
+    if(updateData.attachments!==undefined)  ticket.attachments = updateData.attachments
+    if(updateData.assignee!==undefined) ticket.assignee = updateData.assignee
+    if(updateData.estimate!==undefined) ticket.estimate = updateData.estimate
+
+    await ticket.save()
+
+    return ticket
+}
+
 module.exports = {
     createNewTicket,
-    findTicketById
+    findTicketById,
+    updateTicket
 }

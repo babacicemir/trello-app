@@ -78,7 +78,30 @@ const readTicket = async(req, res) => {
    }
 }
 
+const updateTicket = async(req, res) => {
+   try{
+      const updateData = req.body
+      const { id } = req.params
+
+      const updatedTicket = await ticketRepository.updateTicket(id, updateData)
+      if(!updatedTicket){
+         return res.status(404).json({ error: "Ticket not found" })
+      }
+      return res.status(200).json({
+         message: "Ticket is successfully updated",
+         updatedTicket
+      })
+   }
+   catch(error){
+      return res.status(500).json({
+      error: "Fail to update a ticket"
+      })
+   }
+   
+}
+
 module.exports = {
     createTicket,
-    readTicket
+    readTicket,
+    updateTicket
 }
