@@ -55,12 +55,30 @@ const createTicket = async(req, res) => {
    }
    catch(error){
     return res.status(500).json({
-      error: "Error updating ticket"
+      error: "Error creating a new ticket"
+    })
+   }
+}
+
+const readTicket = async(req, res) => {
+   try{
+      const { id } = req.params
+      
+      const findTicket = await ticketRepository.findTicketById(id)
+      console.log(findTicket)
+      if(!findTicket){
+         return res.status(404).json({ error: "Ticket cannot be find with this ID" })
+      }
+      return res.status(200).json(findTicket)
+   }
+   catch(error){
+      return res.status(500).json({
+      error: "Error getting a ticket by ID"
     })
    }
 }
 
 module.exports = {
     createTicket,
-
+    readTicket
 }

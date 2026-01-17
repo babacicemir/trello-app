@@ -18,5 +18,5 @@ router.post("/columns", checkJWT, validation.columnValidate, column.createColumn
 router.put("/columns/:columnId", checkJWT, column.updateColumn)
 
 router.post("/:boardId/tickets", checkJWT, validation.ticketValidate, ticket.createTicket)
-
+router.get("/:boardId/ticket/:id", checkJWT, ticket.readTicket)
 module.exports = router

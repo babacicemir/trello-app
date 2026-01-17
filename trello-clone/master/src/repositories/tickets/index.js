@@ -18,6 +18,12 @@ const createNewTicket = async(ticketData) => {
     return createdTicket
 }
 
+const findTicketById = async(id) => {
+    const ticket = Ticket.findOne( { id } )
+    return ticket
+}
+
 module.exports = {
     createNewTicket,
+    findTicketById
 }
