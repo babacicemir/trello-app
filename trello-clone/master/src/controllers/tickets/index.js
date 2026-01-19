@@ -4,6 +4,7 @@ const usersRepository = require("../../repositories/users")
 
 const createTicket = async(req, res) => {
    try{
+      console.log("evo me")
      const {
         title,
         description,
@@ -15,6 +16,7 @@ const createTicket = async(req, res) => {
 
 
      const { boardId } = req.params
+
 
      const user = await usersRepository.getUserByEmail(assignee)
      if (!user) {
@@ -42,6 +44,8 @@ const createTicket = async(req, res) => {
         estimate,
         created_at: new Date()
      }
+
+     console.log(data)
 
 
      const createdTicket = await ticketRepository.createNewTicket(data)

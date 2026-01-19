@@ -13,6 +13,7 @@ const createNewTicket = async(ticketData) => {
         created_at: ticketData.created_at, 
     })
 
+    console.log(ticket)
 
     const createdTicket = await ticket.save()
     return createdTicket

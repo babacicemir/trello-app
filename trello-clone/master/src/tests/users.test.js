@@ -10,7 +10,8 @@ const expect = chai.expect
 describe("E2E tests", () => {
   let code
   let token
-  const boardId = user.BOARD_ID
+  //const boardId = user.BOARD_ID
+  let boardId
   const firstName = user.FIRST_NAME
   const lastName = user.LAST_NAME
   const email = user.USER_EMAIL
@@ -18,6 +19,7 @@ describe("E2E tests", () => {
   const inviteEmail = user.EMAIL_INVITATION
   before(async () => {
     await createDatabaseConnectionTest()
+    
   })
 
   describe("Signup API", () => {
@@ -177,44 +179,65 @@ describe("E2E tests", () => {
     })
   })
 
+  describe("Create board for invitation tests", () => {
+  it("should create a board", async () => {
+    const res = await chai.request(app)
+      .post("/api/boards")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        name: "Invite board test"
+      })
+
+    expect(res).to.have.status(201)
+    expect(res.body).to.have.property("createdBoard")
+    expect(res.body.createdBoard).to.have.property("id")
+
+    boardId = res.body.createdBoard.id
+  })
+  })
+
 
   describe("Send invite API", () => {
-    it("should send an invite to another user", async () => {
-      const res = await chai.request(app)
-        .post("/api/users/invite")
-        .set("Authorization", `Bearer ${token}`)
-        .send({
-          idBoard: boardId,
-          email: inviteEmail
-        })
-      expect(res).to.have.status(200)
-      code = res.body.confirmationCode
-    }).timeout(20000)
+  it("should send an invite to another user", async () => {
+    const res = await chai.request(app)
+      .post("/api/users/invite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        idBoard: boardId,
+        email: inviteEmail
+      })
 
-    it("should return an error when the user is already on board", async () => {
-      const res = await chai
-        .request(app)
-        .post("/api/users/invite")
-        .set("Authorization", `Bearer ${token}`)
-        .send({ idBoard: boardId, email: inviteEmail })
+    expect(res).to.have.status(200)
+    expect(res.body).to.have.property("confirmationCode")
 
-      expect(res).to.have.status(400)
-    })
-
-    it("should return an error if missing required credentials", async () => {
-      const res = await chai
-        .request(app)
-        .post("/api/users/invite")
-        .set("Authorization", `Bearer ${token}`)
-        .send({})
-
-      expect(res).to.have.status(400)
-      expect(res.body.errors).to.deep.equal([
-        "Board ID is required.",
-        "Email is required.",
-      ])
-    })
+    code = res.body.confirmationCode
   })
+
+  it("should return error if user is already invited", async () => {
+    const res = await chai.request(app)
+      .post("/api/users/invite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        idBoard: boardId,
+        email: inviteEmail
+      })
+
+    expect(res).to.have.status(400)
+    expect(res.body).to.have.property("error")
+  })
+
+  it("should return error if required fields are missing", async () => {
+    const res = await chai.request(app)
+      .post("/api/users/invite")
+      .set("Authorization", `Bearer ${token}`)
+      .send({})
+
+    expect(res).to.have.status(400)
+    expect(res.body.errors).to.include("Board ID is required.")
+    expect(res.body.errors).to.include("Email is required.")
+  })
+})
+
 
 
   describe("Accept invite API", () => {

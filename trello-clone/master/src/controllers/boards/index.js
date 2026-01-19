@@ -7,10 +7,10 @@ const { sendEmail } = require("../../config/mailservice")
 
 const createBoard = async (req, res) => {
   try {
-    const { name, users } = req.body
+    const { name, users=[] } = req.body
     const board = {
       name,
-      users: [],
+      users,
     }
 
     let token = req.header("Authorization")

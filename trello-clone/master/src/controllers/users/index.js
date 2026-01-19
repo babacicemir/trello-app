@@ -101,12 +101,18 @@ const acceptInvite = async (req, res) => {
     const { id, code } = req.params
 
     const invitation = await userRepository.findInvitation(id, code)
-    if (invitation.acceptedInvitation === true) {
-      return res.status(400).json({ error: "Already accepted invite" })
-    } else {
-      await userRepository.updateInvitation(id, code)
+
+    if (!invitation) {
+      return res.status(404).json({ error: "Invitation not found" })
     }
 
+    if (invitation.acceptedInvitation === true) {
+      return res.status(400).json({ error: "Already accepted invite" })
+    }
+
+    await userRepository.updateInvitation(id, code)
+ 
+       
     const userEmail = invitation.email
 
     const role = "member"

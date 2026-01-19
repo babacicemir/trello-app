@@ -8,7 +8,6 @@ const createNewColumn = async(data) => {
         boardId: data.boardId,
         default: data.isDefault
     })
-    console.log(column)
     const createdColumn = await column.save()
     return createdColumn
 }

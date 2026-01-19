@@ -20,4 +20,5 @@ router.put("/columns/:columnId", checkJWT, column.updateColumn)
 router.post("/:boardId/tickets", checkJWT, validation.ticketValidate, ticket.createTicket)
 router.get("/:boardId/ticket/:id", checkJWT, ticket.readTicket)
 router.put("/:boardId/ticket/:id", checkJWT, ticket.updateTicket)
+
 module.exports = router
